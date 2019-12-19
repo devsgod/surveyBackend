@@ -157,7 +157,7 @@ router.post('/response', function(req, res, next) {
     query = { 'poll_id': resp.poll_id };
     collection_polls.find(query).toArray(function(_err, docs) {
         if (docs[0] == undefined) {
-            res.status(201).json('This poll already exist');
+            res.status(201).json('This poll does not exist');
         } else {
             var temp = 0;
             var equalState = false;
@@ -165,7 +165,7 @@ router.post('/response', function(req, res, next) {
                 collection_polls.update({ _id: docs[0]._id }, {
                     $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
                 }, function(_err, inserted) {
-                    res.json("Added Successfully!");
+                    res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                 });
             } else {
                 if (docs[0].user_response.length == 1) {
@@ -175,13 +175,13 @@ router.post('/response', function(req, res, next) {
                                 $set: { 'user_response.$.user_id': resp.user_id, 'user_response.$.answer': resp.answer, 'user_response.$.responseDate': resp.date }
                             },
                             function(_err, inserted) {
-                                res.json("Updated Sucessfully!");
+                                res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, docs[0], "Updated Successfully!", true));
                             });
                     } else {
                         collection_polls.update({ _id: docs[0]._id }, {
                             $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
                         }, function(_err, inserted) {
-                            res.json("Added Successfully");
+                            res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                         });
                     }
 
@@ -197,14 +197,14 @@ router.post('/response', function(req, res, next) {
                         collection_polls.update({ _id: docs[0]._id }, {
                             $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
                         }, function(_err, inserted) {
-                            res.json("Added Successfully");
+                            res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                         });
                     } else {
                         collection_polls.updateOne({ _id: docs[0]._id, 'user_response.user_id': resp.user_id }, {
                                 $set: { 'user_response.$.user_id': resp.user_id, 'user_response.$.answer': resp.answer, 'user_response.$.responseDate': resp.date }
                             },
                             function(_err, inserted) {
-                                res.json("Updated Sucessfully");
+                                res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, "Updated Successfully!", docs[0], true));
                             }
                         );
                     }

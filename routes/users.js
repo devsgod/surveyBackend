@@ -95,7 +95,11 @@ router.post('/login', function(req, res, next) {
             var result = {
                 message: 'user authentication done',
                 token: token,
-                id: userId
+                id: userId,
+                email: docs[0].email,
+                experton: docs[0].experton,
+                joinDate: docs[0].joinDate,
+                years: docs[0].years
             };
             res.json(_displayResults(_resultCode.LOGIN_SUCCESS, result, true));
         }
