@@ -60,7 +60,7 @@ router.post('/create', function(req, res, next) {
     query = { 'poll_title': poll.title, 'poll_description': poll.description };
     collection_polls.find(query).toArray(function(_err, docs) {
         if (docs[0] == undefined) {
-            query = { 'poll_id': uniqid.time(), 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answertype': poll.answerType, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 }, 'poll_date_created': poll.dateCreated, 'poll_resNum1': '0', 'poll_resNum2': '0', 'poll_status': 'false', 'poll_user_id': poll.user_id, 'poll_resNum': '0' };
+            query = { 'poll_id': uniqid.time(), 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answertype': poll.answerType, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 }, 'poll_date_created': poll.dateCreated, 'poll_status': 'false', 'poll_user_id': poll.user_id };
             collection_polls.insert(query, function(_err, inserted) {
                 res.json(_displayResults(_resultCode.POLL_CREATE_SUCCESSFULLY, 'Successfully created'));
             });
@@ -72,16 +72,6 @@ router.post('/create', function(req, res, next) {
 
 // insert or update responses
 router.post('/response', function(req, res, next) {
-    resp.title = req.body.title;
-    if (resp.title === undefined) {
-        res.status(205).json(_displayResults(_resultCode.TITLE_UNDEFINED, 'Title is undefined!'));
-        return;
-    }
-    resp.description = req.body.description;
-    if (resp.description === undefined) {
-        res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'description is undefined!'));
-        return;
-    }
     resp.poll_id = req.body.poll_id;
     if (resp.poll_id === undefined) {
         res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'poll_id is undefined!'));
@@ -164,7 +154,7 @@ router.post('/response', function(req, res, next) {
     });
 
     // Poll insert or update
-    query = { 'poll_title': resp.title, 'poll_description': resp.description };
+    query = { 'poll_id': resp.poll_id };
     collection_polls.find(query).toArray(function(_err, docs) {
         if (docs[0] == undefined) {
             res.status(201).json('This poll already exist');
@@ -288,7 +278,17 @@ router.post('/changestatus', function(req, res, next) {
             }
         }
     });
+});
 
+router.post('/getpoll', function(req, res, next) {
+    var collection_polls = db.get().collection("polls");
+    collection_polls.find().toArray(function(_err, docs) {
+        if (docs[0] == undefined) {
+            res.status(205).json(_displayResults(_resultCode.POLL_DOES_NOT_EXIST, 'Poll does not existed!'));
+        } else {
+            res.status(200).json(_displayResults(_resultCode.POLL_TOTAL_SEND_SUCCESSFULLY, docs, "Send Sucessfully", true));
+        }
+    });
 });
 
 module.exports = router;
