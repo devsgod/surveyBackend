@@ -19,57 +19,6 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-// insert poll
-router.post('/create', function(req, res, next) {
-    poll.title = req.body.title;
-    if (poll.title === undefined) {
-        res.status(205).json(_displayResults(_resultCode.TITLE_UNDEFINED, 'Title is undefined!'));
-        return;
-    }
-    poll.description = req.body.description;
-    if (poll.description === undefined) {
-        res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'Description is undefined'));
-        return;
-    }
-    poll.answerType = req.body.answerType;
-    if (poll.answerType === undefined) {
-        res.status(205).json(_displayResults(_resultCode.ANSWERTYPE_UNDEFINED, 'AnswerType is undefined'));
-        return;
-    }
-    poll.option1 = req.body.option1;
-    if (poll.option1 === undefined) {
-        res.status(205).json(_displayResults(_resultCode.OPTION1_UNDEFINED, 'Option1 is undefined'));
-        return;
-    }
-    poll.option2 = req.body.option2;
-    if (poll.option2 === undefined) {
-        res.status(205).json(_displayResults(_resultCode.OPTION2_UNDEFINED, 'Option2 is undefined'));
-        return;
-    }
-    poll.dateCreated = req.body.dateCreated;
-    if (poll.dateCreated === undefined) {
-        res.status(205).json(_displayResults(_resultCode.DATECREATED_UNDEFIND, 'CreatedDate is undefined'));
-        return;
-    }
-    poll.user_id = req.headers.user_id;
-    if (poll.user_id === undefined) {
-        res.status(205).json(_displayResults(_resultCode.USERID_UNDEFINED, 'user_id is undefined'));
-        return;
-    }
-    var collection_polls = db.get().collection("polls");
-    query = { 'poll_title': poll.title, 'poll_description': poll.description };
-    collection_polls.find(query).toArray(function(_err, docs) {
-        if (docs[0] == undefined) {
-            query = { 'poll_id': uniqid.time(), 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answertype': poll.answerType, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 }, 'poll_date_created': poll.dateCreated, 'poll_status': 'false', 'poll_user_id': poll.user_id };
-            collection_polls.insert(query, function(_err, inserted) {
-                res.json(_displayResults(_resultCode.POLL_CREATE_SUCCESSFULLY, 'Successfully created'));
-            });
-        } else {
-            res.status(201).json(_displayResults(_resultCode.POLL_ALREADY_EXIST, 'Poll already existed'));
-        }
-    });
-});
-
 // insert or update responses
 router.post('/response', function(req, res, next) {
     resp.poll_id = req.body.poll_id;
@@ -77,9 +26,24 @@ router.post('/response', function(req, res, next) {
         res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'poll_id is undefined!'));
         return;
     }
-    resp.user_id = req.headers.user_id;
+    resp.user_id = req.body.user_id;
     if (resp.user_id === undefined) {
         res.status(205).json(_displayResults(_resultCode.USERID_UNDEFINED, 'user_id is undefined!'));
+        return;
+    }
+    resp.email = req.body.email;
+    if (resp.email === undefined) {
+        res.status(205).json(_displayResults(_resultCode.EMAIL_UNDEFINED, 'email is undefined!'));
+        return;
+    }
+    resp.experton = req.body.experton;
+    if (resp.experton === undefined) {
+        res.status(205).json(_displayResults(_resultCode.EXPERTON_UNDEFINED, 'experton is undefined!'));
+        return;
+    }
+    resp.years = req.body.years;
+    if (resp.years === undefined) {
+        res.status(205).json(_displayResults(_resultCode.YEARS_UNDEFINED, 'years is undefined!'));
         return;
     }
     resp.answer = req.body.answer;
@@ -163,9 +127,9 @@ router.post('/response', function(req, res, next) {
             var equalState = false;
             if (docs[0].user_response == undefined) {
                 collection_polls.update({ _id: docs[0]._id }, {
-                    $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                    $push: { 'user_response': { 'user_id': resp.user_id, 'user_email': resp.email, 'experton': resp.experton, 'years': resp.years, 'answer': resp.answer, 'responseDate': resp.date } }
                 }, function(_err, inserted) {
-                    res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
+                    res.json(_displayResults(_resultCode.POLLRES_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                 });
             } else {
                 if (docs[0].user_response.length == 1) {
@@ -175,13 +139,13 @@ router.post('/response', function(req, res, next) {
                                 $set: { 'user_response.$.user_id': resp.user_id, 'user_response.$.answer': resp.answer, 'user_response.$.responseDate': resp.date }
                             },
                             function(_err, inserted) {
-                                res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, docs[0], "Updated Successfully!", true));
+                                res.json(_displayResults(_resultCode.POLLRES_UPDATED_SUCCESSFULLY, docs[0], "Updated Successfully!", true));
                             });
                     } else {
                         collection_polls.update({ _id: docs[0]._id }, {
-                            $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                            $push: { 'user_response': { 'user_id': resp.user_id, 'user_email': resp.email, 'experton': resp.experton, 'years': resp.years, 'answer': resp.answer, 'responseDate': resp.date } }
                         }, function(_err, inserted) {
-                            res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
+                            res.json(_displayResults(_resultCode.POLLRES_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                         });
                     }
 
@@ -195,16 +159,16 @@ router.post('/response', function(req, res, next) {
                     }
                     if (equalState == false) {
                         collection_polls.update({ _id: docs[0]._id }, {
-                            $push: { 'user_response': { 'user_id': resp.user_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                            $push: { 'user_response': { 'user_id': resp.user_id, 'user_email': resp.email, 'experton': resp.experton, 'years': resp.years, 'answer': resp.answer, 'responseDate': resp.date } }
                         }, function(_err, inserted) {
-                            res.json(_displayResults(_resultCode.POLL_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
+                            res.json(_displayResults(_resultCode.POLLRES_ADDED_SUCCESSFULLY, docs[0], "Added Successfully!", true));
                         });
                     } else {
                         collection_polls.updateOne({ _id: docs[0]._id, 'user_response.user_id': resp.user_id }, {
                                 $set: { 'user_response.$.user_id': resp.user_id, 'user_response.$.answer': resp.answer, 'user_response.$.responseDate': resp.date }
                             },
                             function(_err, inserted) {
-                                res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, "Updated Successfully!", docs[0], true));
+                                res.json(_displayResults(_resultCode.POLLRES_UPDATED_SUCCESSFULLY, "Updated Successfully!", docs[0], true));
                             }
                         );
                     }
@@ -216,7 +180,7 @@ router.post('/response', function(req, res, next) {
 });
 
 router.post('/userpolldata', function(req, res, next) {
-    resp.user_id = req.headers.user_id;
+    resp.user_id = req.body.user_id;
     if (resp.user_id == undefined) {
         res.status(205).json(_displayResults(_resultCode.USERID_UNDEFINED, 'User_id is undefined!'));
         return;
@@ -231,13 +195,13 @@ router.post('/userpolldata', function(req, res, next) {
                 message: "Poll is available",
                 data: docs
             }
-            res.json(_displayResults(_resultCode.GET_POLL_SUCCESS, result, true));
+            res.json(_displayResults(_resultCode.GET_USER_POLL_SUCCESS, result, true));
         }
     });
 });
 
 router.post('/changestatus', function(req, res, next) {
-    resp.user_id = req.headers.user_id;
+    resp.user_id = req.body.user_id;
     if (resp.user_id == undefined) {
         res.status(205).json(_displayResults(_resultCode.USERID_UNDEFINED, 'User_id is undefined!'));
         return;
@@ -286,7 +250,7 @@ router.post('/getpoll', function(req, res, next) {
         if (docs[0] == undefined) {
             res.status(205).json(_displayResults(_resultCode.POLL_DOES_NOT_EXIST, 'Poll does not existed!'));
         } else {
-            res.status(200).json(_displayResults(_resultCode.POLL_TOTAL_SEND_SUCCESSFULLY, docs, "Send Sucessfully", true));
+            res.status(200).json(_displayResults(_resultCode.GET_TOTAL_POLL_SUCCESS, docs, "Send Sucessfully", true));
         }
     });
 });

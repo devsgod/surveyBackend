@@ -11,6 +11,8 @@ var db = require('./db');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var pollsRouter = require('./routes/polls');
+var pollcrudRouter = require('./routes/pollcrud');
+
 var auth_middleware = require('./auth_middleware');
 
 var app = express();
@@ -31,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 /* token authrization*/
-app.use('/api/polls/create', auth_middleware);
+// app.use('/api/polls/create', auth_middleware);
 // app.use('/api/polls/response', auth_middleware);
 // app.use('/api/polls/userpolldata', auth_middleware);
 // app.use('/api/polls/changestatus', auth_middleware);
@@ -40,6 +42,8 @@ app.use('/api/polls/create', auth_middleware);
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/polls', pollsRouter);
+app.use('/api/pollcrud', pollcrudRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
