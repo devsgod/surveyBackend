@@ -21,6 +21,9 @@ router.get('/', function(req, res, next) {
 
 // insert or update responses
 router.post('/response', function(req, res, next) {
+
+    console.log(req.body);
+
     resp.poll_id = req.body.poll_id;
     if (resp.poll_id === undefined) {
         res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'poll_id is undefined!'));
@@ -36,6 +39,24 @@ router.post('/response', function(req, res, next) {
         res.status(205).json(_displayResults(_resultCode.EMAIL_UNDEFINED, 'email is undefined!'));
         return;
     }
+    //adding title and description
+    resp.poll_user_id = req.body.poll_user_id;
+    if (resp.poll_user_id === undefined) {
+        res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'poll_user_id is undefined!'));
+        return;
+    }
+    resp.title = req.body.title;
+    if (resp.title === undefined) {
+        res.status(205).json(_displayResults(_resultCode.TITLE_UNDEFINED, 'title is undefined!'));
+        return;
+    }
+    resp.description = req.body.description;
+    if (resp.description === undefined) {
+        res.status(205).json(_displayResults(_resultCode.DESCRIPTIOIN_UNDEFINED, 'description is undefined!'));
+        return;
+    }
+
+
     resp.experton = req.body.experton;
     if (resp.experton === undefined) {
         res.status(205).json(_displayResults(_resultCode.EXPERTON_UNDEFINED, 'experton is undefined!'));
@@ -68,7 +89,7 @@ router.post('/response', function(req, res, next) {
             var equalState_users = 0;
             if (docs[0].poll_response == undefined) {
                 collection_users.update({ _id: docs[0]._id }, {
-                    $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                    $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
                 }, function(_err, inserted) {
                     // res.json("Added Successfully to users!");
                 });
@@ -84,7 +105,7 @@ router.post('/response', function(req, res, next) {
                             });
                     } else {
                         collection_users.update({ _id: docs[0]._id }, {
-                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
                         }, function(_err, inserted) {
                             // res.json("Added Successfully to users");
                         });
@@ -99,7 +120,7 @@ router.post('/response', function(req, res, next) {
                     }
                     if (equalState_users == false) {
                         collection_users.update({ _id: docs[0]._id }, {
-                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date } }
+                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
                         }, function(_err, inserted) {
                             // res.json("Added Successfully to users");
                         });
@@ -228,14 +249,14 @@ router.post('/changestatus', function(req, res, next) {
                         $set: { 'poll_status': "true" }
                     },
                     function(_err, inserted) {
-                        res.status(200).json(_displayResults(_resultCode.POLL_STATUS_CAHNGE_SUCCESS, "Status Changed Sucessfully", true));
+                        res.status(200).json(_displayResults(_resultCode.POLL_STATUS_CAHNGE_SUCCESS, "Status Changed Successfully", true));
                     });
             } else if (resp.poll_status == "false") {
                 collection_polls.updateOne({ _id: docs[0]._id }, {
                         $set: { 'poll_status': "false" }
                     },
                     function(_err, inserted) {
-                        res.status(200).json(_displayResults(_resultCode.POLL_STATUS_CAHNGE_SUCCESS, "Status Changed Sucessfully", true));
+                        res.status(200).json(_displayResults(_resultCode.POLL_STATUS_CAHNGE_SUCCESS, "Status Changed Successfully", true));
                     });
             } else {
                 res.status(205).json(_displayResults(_resultCode.NOTHING_HAPPEND, "Nothing happened"));

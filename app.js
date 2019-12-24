@@ -12,6 +12,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var pollsRouter = require('./routes/polls');
 var pollcrudRouter = require('./routes/pollcrud');
+var emailverify = require('./routes/emailverify');
 
 var auth_middleware = require('./auth_middleware');
 
@@ -43,6 +44,7 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/polls', pollsRouter);
 app.use('/api/pollcrud', pollcrudRouter);
+app.use('/api/emailverify', emailverify);
 
 
 // catch 404 and forward to error handler

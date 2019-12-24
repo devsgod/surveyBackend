@@ -55,7 +55,7 @@ router.post('/create', function(req, res, next) {
     }
     poll.poll_id = uniqid.time();
     var collection_polls = db.get().collection("polls");
-    query = { 'poll_user_id': poll.user_id, 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 } };
+    query = { 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 } };
     collection_polls.find(query).toArray(function(_err, docs) {
         if (docs[0] == undefined) {
             query = { 'poll_id': poll.poll_id, 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answertype': poll.answerType, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 }, 'poll_date_created': poll.dateCreated, 'poll_status': 'false', 'poll_user_id': poll.user_id };
@@ -124,7 +124,7 @@ router.post('/update', function(req, res, next) {
                             $set: { 'poll_title': poll.title, 'poll_description': poll.description, 'poll_answertype': poll.answerType, 'poll_answers': { 'option1': poll.option1, 'option2': poll.option2 }, 'poll_date_created': poll.dateCreated }
                         },
                         function(_err, inserted) {
-                            res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, 'Successfully poll updated'));
+                            res.json(_displayResults(_resultCode.POLL_UPDATED_SUCCESSFULLY, poll.poll_id, 'Successfully poll updated'));
                         });
 
                 } else {
@@ -146,17 +146,11 @@ router.post('/delete', function(req, res, next) {
         res.status(205).json(_displayResults(_resultCode.USERID_UNDEFINED, 'user_id is undefined'));
         return;
     }
-    console.log("here1");
-
     poll.poll_id = req.body.poll_id;
-    console.log(poll.poll_id);
-
     if (poll.poll_id === undefined) {
         res.status(205).json(_displayResults(_resultCode.POLLID_UNDEFINED, 'poll_id is undefined'));
         return;
     }
-    console.log("here2");
-
     var collection_polls = db.get().collection("polls");
     query = { 'poll_user_id': poll.user_id, 'poll_id': poll.poll_id };
     collection_polls.find(query).toArray(function(_err, docs) {
