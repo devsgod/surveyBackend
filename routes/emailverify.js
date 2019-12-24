@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
         secure: false, // use TLS
         auth: {
             user: 'milttamer8@gmail.com',
-            pass: '2628Milt#'
+            pass: '913Pu2RzqwZ94EsCb'
         },
         tls: {
             rejectUnauthorized: false
@@ -28,7 +28,7 @@ router.post('/', function(req, res, next) {
 
     const mailOptions = {
         from: myemail, // sender address
-        to: 'milttamer8@gmail.com', // list of receivers
+        to: 'threathaus123@gmail.com', // list of receivers
         subject: 'Hello, TheatHaus, Contact Me', // Subject line
         html: '<h3><font color="red">First Name</font>:' + myname + '<br />' +
             '<font color="red">Business Email</font>:' + myemail + '<br />' +
