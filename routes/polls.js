@@ -79,64 +79,63 @@ router.post('/response', function(req, res, next) {
     }
     // Userdata insert or update
     var collection_polls = db.get().collection("polls");
-    var collection_users = db.get().collection("users");
-    query = { 'user_id': resp.user_id };
-    collection_users.find(query).toArray(function(_err, docs) {
-        if (docs[0] == undefined) {
-            // res.json('User does not match!');
-        } else {
-            var temp_users = 0;
-            var equalState_users = 0;
-            if (docs[0].poll_response == undefined) {
-                collection_users.update({ _id: docs[0]._id }, {
-                    $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
-                }, function(_err, inserted) {
-                    // res.json("Added Successfully to users!");
-                });
-            } else {
-                if (docs[0].poll_response.length == 1) {
+    // var collection_users = db.get().collection("users");
+    // query = { 'user_id': resp.user_id };
+    // collection_users.find(query).toArray(function(_err, docs) {
+    //     if (docs[0] == undefined) {
+    //         // res.json('User does not match!');
+    //     } else {
+    //         var equalState_users = 0;
+    //         if (docs[0].poll_response == undefined) {
+    //             collection_users.update({ _id: docs[0]._id }, {
+    //                 $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
+    //             }, function(_err, inserted) {
+    //                 // res.json("Added Successfully to users!");
+    //             });
+    //         } else {
+    //             if (docs[0].poll_response.length == 1) {
 
-                    if (docs[0].poll_response[0].poll_id == resp.poll_id) {
-                        collection_users.updateOne({ _id: docs[0]._id, 'poll_response.poll_id': resp.poll_id }, {
-                                $set: { 'poll_response.$.poll_id': resp.poll_id, 'poll_response.$.answer': resp.answer, 'poll_response.$.responseDate': resp.date }
-                            },
-                            function(_err, inserted) {
-                                // res.json("Updated Successfully to users!");
-                            });
-                    } else {
-                        collection_users.update({ _id: docs[0]._id }, {
-                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
-                        }, function(_err, inserted) {
-                            // res.json("Added Successfully to users");
-                        });
-                    }
+    //                 if (docs[0].poll_response[0].poll_id == resp.poll_id) {
+    //                     collection_users.updateOne({ _id: docs[0]._id, 'poll_response.poll_id': resp.poll_id }, {
+    //                             $set: { 'poll_response.$.poll_id': resp.poll_id, 'poll_response.$.answer': resp.answer, 'poll_response.$.responseDate': resp.date }
+    //                         },
+    //                         function(_err, inserted) {
+    //                             // res.json("Updated Successfully to users!");
+    //                         });
+    //                 } else {
+    //                     collection_users.update({ _id: docs[0]._id }, {
+    //                         $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
+    //                     }, function(_err, inserted) {
+    //                         // res.json("Added Successfully to users");
+    //                     });
+    //                 }
 
-                } else {
-                    for (temp = 0; temp < docs[0].poll_response.length; temp++) {
-                        if (docs[0].poll_response[temp].poll_id == resp.poll_id) {
-                            equalState_users = true;
-                            break;
-                        }
-                    }
-                    if (equalState_users == false) {
-                        collection_users.update({ _id: docs[0]._id }, {
-                            $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
-                        }, function(_err, inserted) {
-                            // res.json("Added Successfully to users");
-                        });
-                    } else {
-                        collection_users.updateOne({ _id: docs[0]._id, 'poll_response.poll_id': resp.poll_id }, {
-                                $set: { 'poll_response.$.poll_id': resp.poll_id, 'poll_response.$.answer': resp.answer, 'poll_response.$.responseDate': resp.date }
-                            },
-                            function(_err, inserted) {
-                                // res.json("Updated Successfully to users");
-                            }
-                        );
-                    }
-                }
-            }
-        }
-    });
+    //             } else {
+    //                 for (temp = 0; temp < docs[0].poll_response.length; temp++) {
+    //                     if (docs[0].poll_response[temp].poll_id == resp.poll_id) {
+    //                         equalState_users = true;
+    //                         break;
+    //                     }
+    //                 }
+    //                 if (equalState_users == false) {
+    //                     collection_users.update({ _id: docs[0]._id }, {
+    //                         $push: { 'poll_response': { 'poll_id': resp.poll_id, 'answer': resp.answer, 'responseDate': resp.date, 'poll_title': resp.poll_title, 'poll_description': resp.description, 'poll_user_id': resp.poll_user_id } }
+    //                     }, function(_err, inserted) {
+    //                         // res.json("Added Successfully to users");
+    //                     });
+    //                 } else {
+    //                     collection_users.updateOne({ _id: docs[0]._id, 'poll_response.poll_id': resp.poll_id }, {
+    //                             $set: { 'poll_response.$.poll_id': resp.poll_id, 'poll_response.$.answer': resp.answer, 'poll_response.$.responseDate': resp.date }
+    //                         },
+    //                         function(_err, inserted) {
+    //                             // res.json("Updated Successfully to users");
+    //                         }
+    //                     );
+    //                 }
+    //             }
+    //         }
+    //     }
+    // });
 
     // Poll insert or update
     query = { 'poll_id': resp.poll_id };

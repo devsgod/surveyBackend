@@ -4,6 +4,7 @@ config.db_url = 'mongodb://localhost:27017/';
 config.database = 'websurvey';
 config.userCollection = "users";
 config.pollsCollection = "polls";
+config.inviteCollection = "invite";
 
 /** user token authorization parameters **/
 config.user_token = {
@@ -100,6 +101,9 @@ config.result_code = {
     DATE_UNDEFINED: 309,
     TOKEN_UNDEFINED: 310,
     POLL_STATUS_UNDEFINED: 311,
+    POLL_USERID_UNDEFINED: 312,
+    INVITE_STATUS_UNDEFINED: 313,
+    USER_EMAIL_UNDEFINED: 314,
 
     /*Response Code*/
     POLL_CREATE_SUCCESSFULLY: 411,
@@ -116,7 +120,16 @@ config.result_code = {
     POLLRES_ADDED_SUCCESSFULLY: 417,
     POLLRES_UPDATED_SUCCESSFULLY: 418,
 
-
+    //INVITATION
+    INVTIED_SUCCESSFULL: 500,
+    ALREADY_ACCEPTED: 501,
+    ALREADY_REJECTED: 502,
+    ALREADY_PEDING: 503,
+    INVITE_NOT_EXISTED: 504,
+    INVITE_ACCEPTED: 505,
+    INVITE_REJECTED: 506,
+    GET_INVITATION_SUCCESSFULLY: 507,
+    GET_RECEPTION_SUCCESSFULLY: 508,
 
     NOTHING_HAPPEND: 999
 
